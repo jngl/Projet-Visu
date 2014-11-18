@@ -46,4 +46,16 @@ public class Locations {
 			singleton = new Locations();
 		return singleton;
 	}
+	
+	public int getIndex(String name) {
+		int result = -1;
+		int i = 0;
+		while(result == -1 && i < nom.length) {
+			if(name.contains(nom[i])) {
+				result = i;
+			}
+			++i;
+		}
+		return result;
+	}
 }
