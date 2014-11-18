@@ -1,4 +1,6 @@
-package io;
+package datas;
+
+import io.Reader;
 
 public class Locations {
 	private static Locations singleton = null;
