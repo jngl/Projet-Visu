@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <GroundOverlay>
+    <name>Overlay on terrain</name>
+    <visibility>1</visibility>
+    <description>Overlay</description>
+    <Icon>
+      <href>E:\Cours\git\Projet-Visu\ProjetVisu\Out\Red.png</href>
+    </Icon>
+    <LatLonBox>
+      <north>37.0</north>
+      <south>35.0</south>
+      <east>16.0</east>
+      <west>14.0</west>
+      <rotation>-0.1556640799496235</rotation>
+    </LatLonBox>
+  </GroundOverlay>
+</kml>

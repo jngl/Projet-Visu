@@ -18,7 +18,7 @@ public class Writer {
 	
 	private static void toJPEG(BufferedImage image, String name) {
 		try {
-			ImageIO.write(image, "JPEG", new File(System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + ".jpg"));
+			ImageIO.write(image, "PNG", new File(System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -33,11 +33,11 @@ public class Writer {
 				+ ls + "    <visibility>1</visibility>"
 				+ ls + "    <description>Overlay</description>"
 				+ ls + "    <Icon>"
-				+ ls + "      <href>" + System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + ".jpg</href>"
+				+ ls + "      <href>" + System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + ".png</href>"
 				+ ls + "    </Icon>"
 				+ ls + "    <LatLonBox>"
 				+ ls + "      <north>" + north + "</north>"
-				+ ls + "      <south>" + south + "</south"
+				+ ls + "      <south>" + south + "</south>"
 				+ ls + "      <east>" + east + "</east>"
 				+ ls + "      <west>" + west + "</west>"
 				+ ls + "      <rotation>-0.1556640799496235</rotation>"
@@ -45,7 +45,7 @@ public class Writer {
 				+ ls + "  </GroundOverlay>"
 				+ ls + "</kml>";
 		try {
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name + ".kml"), "UTF-8"));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + ".kml"), "UTF-8"));
 		    out.write(text);
 		    out.close();
 		} catch (IOException e) {
