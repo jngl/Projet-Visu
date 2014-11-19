@@ -1,9 +1,5 @@
 package main;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import datas.GazDatas;
 import datas.Locations;
 import exception.MyOutOfBoundException;
@@ -11,7 +7,6 @@ import utils.*;
 
 public class Main {
 	public static void main(String[] args) {
-		Test.printGazDatas();
 	}
 	
 	@SuppressWarnings("unused")
