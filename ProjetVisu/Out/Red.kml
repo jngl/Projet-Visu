@@ -5,13 +5,13 @@
     <visibility>1</visibility>
     <description>Overlay</description>
     <Icon>
-      <href>E:\Cours\git\Projet-Visu\ProjetVisu\Out\Red.png</href>
+      <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\Red.png</href>
     </Icon>
     <LatLonBox>
-      <north>37.0</north>
-      <south>35.0</south>
-      <east>16.0</east>
-      <west>14.0</west>
+      <north>90.0</north>
+      <south>80.0</south>
+      <east>50.0</east>
+      <west>0.0</west>
       <rotation>-0.1556640799496235</rotation>
     </LatLonBox>
   </GroundOverlay>

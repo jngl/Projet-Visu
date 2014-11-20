@@ -39,8 +39,8 @@ public class Main {
 			} catch (MyOutOfBoundException e) {
 				e.printStackTrace();
 			}
-			for(int i = 0; i < gazDatas.datas.size(); ++i) {
-				System.out.println(gazDatas.datas.get(i).toString());
+			for(int i = 0; i < gazDatas.getDatas().size(); ++i) {
+				System.out.println(gazDatas.getDatas().get(i).toString());
 			}
 		}
 	}

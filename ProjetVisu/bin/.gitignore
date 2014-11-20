@@ -1,5 +1,3 @@
-/main/
-/datas/
-/utils/
-/io/
-/exception/
+/datas
+/main
+/utils
