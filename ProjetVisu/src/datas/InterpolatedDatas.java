@@ -11,6 +11,8 @@ public class InterpolatedDatas {
 	private double maxLatitude;
 	private double minLongitude;
 	private double maxLongitude;
+	private double minValue;
+	private double maxValue;
 	
 	private double ShepardPower;
 	private double pixelHeight;
@@ -25,6 +27,8 @@ public class InterpolatedDatas {
 		maxLongitude = gazDatas.getMaxLongitude() + (gazDatas.getMaxLongitude() - gazDatas.getMinLongitude())/10;
 		pixelHeight = (maxLatitude - minLatitude) / (double)(height - 1);
 		pixelWidth = (maxLongitude - minLongitude) / (double)(width - 1);
+		minValue = Double.MAX_VALUE;
+		maxValue = Double.MIN_VALUE;
 		
 		for(int line = 0; line < height; ++line) {
 			for(int column = 0; column < width; ++column) {
@@ -33,6 +37,12 @@ public class InterpolatedDatas {
 				}
 				else if(method ==  HardyMethod) {
 					datas[line][column] = fillDatasHardyMethod(line, column, gazDatas);
+				}
+				if(datas[line][column] < minValue) {
+					minValue = datas[line][column];
+				}
+				if(datas[line][column] > maxValue) {
+					maxValue = datas[line][column];
 				}
 			}
 		}
@@ -76,5 +86,13 @@ public class InterpolatedDatas {
 
 	public double getMaxLongitude() {
 		return maxLongitude;
+	}
+
+	public double getMaxValue() {
+		return maxValue;
+	}
+
+	public double getMinValue() {
+		return minValue;
 	}
 }
