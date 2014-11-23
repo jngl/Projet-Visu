@@ -63,9 +63,10 @@ public class InterpolatedDatas {
 		Point2D.Double point = getEarthPostions(line, column);
 		double sumValues = 0;
 		double sumDist = 0;
-		for(int i = 0; i < gazDatas.getDatas(date).size(); ++i) {
-			double dist = 1.0/Math.pow(point.distance(gazDatas.getDatas(date).get(i).x), ShepardPower);
-			sumValues += dist * gazDatas.getDatas(date).get(i).y;
+		gazDatas.setUniqueDate(date);
+		for(int i = 0; i < gazDatas.getUniqueDateDatas().size(); ++i) {
+			double dist = 1.0/Math.pow(point.distance(gazDatas.getUniqueDateDatas().get(i).x), ShepardPower);
+			sumValues += dist * gazDatas.getUniqueDateDatas().get(i).y;
 			sumDist += dist;
 		}
 		return sumValues / sumDist;

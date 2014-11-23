@@ -81,6 +81,23 @@ public class GazDatas {
 		return null;
 	}
 	
+	public void setUniqueDate(Date date) {
+		int i = 0;
+		while(i < dates.size() && !Utils.getString(dates.get(i)).equals(Utils.getString(date))) {
+			++i;
+		}
+		if(i < datas.size()) {
+			List<Tuple<Point2D.Double, Double>> result = datas.remove(i);
+			Date resultDate = dates.remove(i);
+			datas.add(0, result);
+			dates.add(0, resultDate);
+		}
+	}
+	
+	public List<Tuple<Point2D.Double, Double>> getUniqueDateDatas() {
+		return datas.get(0);
+	}
+	
 	public Date getBeginDate() {
 		return dates.get(0);
 	}
