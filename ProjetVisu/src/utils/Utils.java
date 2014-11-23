@@ -34,7 +34,7 @@ public class Utils {
 	}
 	
 	public static String getString(Date date) {
-		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy-hh:mm:ss");
+		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy-HH:mm:ss");
 		return df.format(date);
 	}
 }

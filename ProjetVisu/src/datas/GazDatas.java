@@ -4,42 +4,53 @@ import io.Reader;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import exception.MyOutOfBoundException;
 import utils.Tuple;
+import utils.Utils;
 
 public class GazDatas {
 	private static final int dateline = 12;
+	private static final int beginDataColumn = 1;
 	
-	private List<Tuple<Point2D.Double, Double>> datas;
+	private List<List<Tuple<Point2D.Double, Double>>> datas;
+	private List<Date> dates;
 	private double minLatitude;
 	private double maxLatitude;
 	private double minLongitude;
 	private double maxLongitude;
 	
-	public GazDatas(String path, Date date) {
+	public GazDatas(String path) {
 		minLatitude = Double.MAX_VALUE;
 		minLongitude = Double.MAX_VALUE;
 		maxLatitude = Double.MIN_VALUE;
 		maxLongitude = Double.MIN_VALUE;
-		datas = new ArrayList<Tuple<Point2D.Double, Double>>();
+		datas = new ArrayList<List<Tuple<Point2D.Double, Double>>>();
+		dates = new ArrayList<Date>();
 		Reader file = new Reader(path);
-		String day = utils.Utils.getString(date).split("-")[0];
-		int hour = Integer.parseInt(utils.Utils.getString(date).split("-")[1].split(":")[0]);
-		int column = file.datas.searchInLine(day, dateline) + hour;
-		if(column == hour - 1) {
-			System.err.println("No such date : " + day + " in file : " + path);
+		String[] beginDay = file.datas.getData(dateline, beginDataColumn).split("/");
+		String[] beginHour = file.datas.getData(dateline + 1, beginDataColumn).split(":");
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(Utils.getDate(Integer.parseInt(beginDay[0]), Integer.parseInt(beginDay[1]), Integer.parseInt(beginDay[2]),
+					Integer.parseInt(beginHour[0]), Integer.parseInt(beginHour[1]), Integer.parseInt(beginHour[2])));
+		} catch (NumberFormatException | MyOutOfBoundException e) {
+			e.printStackTrace();
 		}
-		else {
-			int line = dateline + 1;
+		int col = beginDataColumn;
+		while(col < file.datas.getWidth() && !file.datas.getData(dateline + 1, col).equals("")) {
+			List<Tuple<Point2D.Double, Double>> liste = new ArrayList<Tuple<Point2D.Double, Double>>();
+			int line = dateline + 2;
 			Locations locations = Locations.getInstance();
 			while(!file.datas.getData(line, 0).equals("")) {
-				if(!file.datas.getData(line, column).equals("-")) {
+				if(!file.datas.getData(line, col).equals("-")) {
 					int index = locations.getIndex(file.datas.getData(line, 0));
 					if(index != -1) {
-						datas.add(new Tuple<Point2D.Double, Double>(new Point2D.Double(locations.coord_long[index], locations.coord_lat[index]),
-								Double.parseDouble(file.datas.getData(line, column).replace(',', '.'))));
+						liste.add(new Tuple<Point2D.Double, Double>(new Point2D.Double(locations.coord_long[index], locations.coord_lat[index]),
+								Double.parseDouble(file.datas.getData(line, col).replace(',', '.'))));
 						if(locations.coord_lat[index] > maxLatitude)
 							maxLatitude = locations.coord_lat[index];
 						if(locations.coord_lat[index] < minLatitude)
@@ -52,11 +63,34 @@ public class GazDatas {
 				}
 				++line;
 			}
+			datas.add(liste);
+			dates.add(cal.getTime());
+			cal.add(Calendar.HOUR_OF_DAY, 1);
+			++col;
 		}
 	}
 	
-	public List<Tuple<Point2D.Double, Double>> getDatas() {
-		return datas;
+	public List<Tuple<Point2D.Double, Double>> getDatas(Date date) {
+		int i = 0;
+		while(i < dates.size() && !Utils.getString(dates.get(i)).equals(Utils.getString(date))) {
+			++i;
+		}
+		if(i < datas.size()) {
+			return datas.get(i);
+		}
+		return null;
+	}
+	
+	public Date getBeginDate() {
+		return dates.get(0);
+	}
+	
+	public Date getEndDate() {
+		return dates.get(dates.size() - 1);
+	}
+	
+	public Date[] getDates() {
+		return dates.toArray(new Date[dates.size()]);
 	}
 
 	public double getMinLatitude() {

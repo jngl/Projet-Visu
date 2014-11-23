@@ -3,15 +3,17 @@ package main;
 import io.Writer;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import datas.GazDatas;
 import datas.Locations;
 import exception.MyOutOfBoundException;
 import utils.*;
+import window.Window;
 
 public class Main {
 	public static void main(String[] args) {
-		Test.buildKML();
+		Test.printGazDatas();
 	}
 	
 	@SuppressWarnings("unused")
@@ -35,13 +37,17 @@ public class Main {
 		public static void printGazDatas() {
 			GazDatas gazDatas = null;
 			try {
-				gazDatas = new GazDatas("particulepm10aout2012.csv", Utils.getDate(8, 1, 2012, 4, 0, 0));
+				gazDatas = new GazDatas("In" + File.separator + "particulepm10aout2012.csv");
+				for(int i = 0; i < gazDatas.getDatas(Utils.getDate(8, 1, 2012, 4, 0, 0)).size(); ++i) {
+					System.out.println(gazDatas.getDatas(Utils.getDate(8, 1, 2012, 4, 0, 0)).get(i).toString());
+				}
 			} catch (MyOutOfBoundException e) {
 				e.printStackTrace();
 			}
-			for(int i = 0; i < gazDatas.getDatas().size(); ++i) {
-				System.out.println(gazDatas.getDatas().get(i).toString());
-			}
+		}
+		
+		public static void testWindow() {
+			Window w = new Window();
 		}
 	}
 }

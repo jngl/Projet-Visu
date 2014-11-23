@@ -1,12 +1,14 @@
 package datas;
 
 import java.awt.geom.Point2D;
+import java.util.Date;
 
 public class InterpolatedDatas {
 	public static final int ShepardMethod = 1;
 	public static final int HardyMethod = 2;
 	
 	private double[][] datas;
+	private Date date;
 	private double minLatitude;
 	private double maxLatitude;
 	private double minLongitude;
@@ -18,8 +20,9 @@ public class InterpolatedDatas {
 	private double pixelHeight;
 	private double pixelWidth;
 	
-	public InterpolatedDatas(GazDatas gazDatas, int method, double ShepardPower, int width, int height) {
+	public InterpolatedDatas(GazDatas gazDatas, Date date, int method, double ShepardPower, int width, int height) {
 		datas = new double[height][width];
+		this.date = date;
 		this.ShepardPower = ShepardPower;
 		minLatitude = gazDatas.getMinLatitude() - (gazDatas.getMaxLatitude() - gazDatas.getMinLatitude())/10;
 		maxLatitude = gazDatas.getMaxLatitude() + (gazDatas.getMaxLatitude() - gazDatas.getMinLatitude())/10;
@@ -52,9 +55,9 @@ public class InterpolatedDatas {
 		Point2D.Double point = getEarthPostions(line, column);
 		double sumValues = 0;
 		double sumDist = 0;
-		for(int i = 0; i < gazDatas.getDatas().size(); ++i) {
-			double dist = 1.0/Math.pow(point.distance(gazDatas.getDatas().get(i).x), ShepardPower);
-			sumValues += dist * gazDatas.getDatas().get(i).y;
+		for(int i = 0; i < gazDatas.getDatas(date).size(); ++i) {
+			double dist = 1.0/Math.pow(point.distance(gazDatas.getDatas(date).get(i).x), ShepardPower);
+			sumValues += dist * gazDatas.getDatas(date).get(i).y;
 			sumDist += dist;
 		}
 		return sumValues / sumDist;
