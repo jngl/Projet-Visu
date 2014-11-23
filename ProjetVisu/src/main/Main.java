@@ -13,11 +13,10 @@ import window.Window;
 
 public class Main {
 	public static void main(String[] args) {
-		Test.printGazDatas();
+		Test.testWindow();
 	}
 	
-	@SuppressWarnings("unused")
-	private static class Test {
+	public static class Test {
 		public static void buildKML() {
 			BufferedImage image = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
 			for(int i = 0; i < 200; ++i)
@@ -47,7 +46,7 @@ public class Main {
 		}
 		
 		public static void testWindow() {
-			Window w = new Window();
+			new Window();
 		}
 	}
 }

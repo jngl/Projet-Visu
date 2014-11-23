@@ -3,6 +3,8 @@ package datas;
 import java.awt.geom.Point2D;
 import java.util.Date;
 
+import window.Window;
+
 public class InterpolatedDatas {
 	public static final int ShepardMethod = 1;
 	public static final int HardyMethod = 2;
@@ -20,7 +22,7 @@ public class InterpolatedDatas {
 	private double pixelHeight;
 	private double pixelWidth;
 	
-	public InterpolatedDatas(GazDatas gazDatas, Date date, int method, double ShepardPower, int width, int height) {
+	public InterpolatedDatas(GazDatas gazDatas, Date date, int method, double ShepardPower, int width, int height, Window window) {
 		datas = new double[height][width];
 		this.date = date;
 		this.ShepardPower = ShepardPower;
@@ -47,7 +49,13 @@ public class InterpolatedDatas {
 				if(datas[line][column] > maxValue) {
 					maxValue = datas[line][column];
 				}
+				if(window != null) {
+					window.setChargement((double) (line * width + column) / (double) (height * width));
+				}
 			}
+		}
+		if(window != null) {
+			window.setInterpolatedDatas(this);
 		}
 	}
 	
