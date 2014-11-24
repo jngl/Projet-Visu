@@ -21,8 +21,18 @@ public class DrawArea extends JPanel {
 	private double minValue;
 	private double maxValue;
 	private BufferedImage image;
+	private float opacity;
 
 	public DrawArea(InterpolatedDatas interpolatedDatas) {
+		opacity = 1.0f;
+		datas = interpolatedDatas.getDatas();
+		minValue = interpolatedDatas.getMinValue();
+		maxValue = interpolatedDatas.getMaxValue();
+		image = new BufferedImage(datas[0].length, datas.length, BufferedImage.TYPE_INT_ARGB);
+	}
+
+	public DrawArea(InterpolatedDatas interpolatedDatas, float opacity) {
+		this.opacity = opacity;
 		datas = interpolatedDatas.getDatas();
 		minValue = interpolatedDatas.getMinValue();
 		maxValue = interpolatedDatas.getMaxValue();
@@ -37,6 +47,10 @@ public class DrawArea extends JPanel {
 			}
 		}
 		repaint();
+	}
+	
+	public BufferedImage getImage() {
+		return image;
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -70,7 +84,7 @@ public class DrawArea extends JPanel {
 			float g = percentageStart * colors.get(i).g + percentageEnd * colors.get(i + 1).g;
 			float b = percentageStart * colors.get(i).b + percentageEnd * colors.get(i + 1).b;
 			float a = percentageStart * colors.get(i).o + percentageEnd * colors.get(i + 1).o;
-			return new Color(r, g, b, a).getRGB();
+			return new Color(r, g, b, a * opacity).getRGB();
 		}
 	}
 		

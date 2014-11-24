@@ -1,5 +1,7 @@
 package window;
 
+import io.Writer;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -21,6 +23,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -39,6 +42,7 @@ public class Window implements Runnable {
 	private DrawArea view;
 	private State state;
 	private JButton open;
+	private JButton save;
 	private JPanel clPanel;
 	private CardLayout cl;
 	private JPanel openOptions;
@@ -54,6 +58,7 @@ public class Window implements Runnable {
 	private JTextField width;
 	private JTextField height;
 	private Window thisWindow;
+	private JSlider slide;
 	
 	private GazDatas gazDatas;
 	
@@ -68,11 +73,11 @@ public class Window implements Runnable {
 		thisWindow = this;
 		state = State.launch;
 		window = new JFrame("Projet - Visualisation");
-		window.setSize(new Dimension(800, 600));
+		window.setSize(new Dimension(960, 600));
 		window.setLocationRelativeTo(null);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setLayout(new BorderLayout());
-		window.setMinimumSize(new Dimension(195, 200));
+		window.setMinimumSize(new Dimension(390, 200));
 		fillLeftSide();
 		clPanel = new JPanel();
 		cl = new CardLayout();
@@ -100,7 +105,7 @@ public class Window implements Runnable {
 	
 	private void fillFinalView() {
 		finalView.removeAll();
-		finalView.setLayout(new BorderLayout());
+		finalView.setLayout(new BorderLayout(5, 5));
 
 		File cMaps = new File(System.getProperty("user.dir") + File.separator + "ColorMaps");
 		colorMaps = cMaps.listFiles();
@@ -118,10 +123,40 @@ public class Window implements Runnable {
 					view.setColorMap(colorListe.getSelectedValue());
 			}
 		});
-		
 		view = new DrawArea(interpolatedDatas);
+
+		JPanel center = new JPanel();
+		center.setLayout(new BorderLayout());
+		JPanel pan = new JPanel();
+		pan.add(new JLabel("Color Maps :"));
+		center.add(pan, BorderLayout.NORTH);
+		center.add(listePanel, BorderLayout.CENTER);
+		JPanel botSide = new JPanel();
+		botSide.setLayout(new GridLayout(3, 1));
+		save = new JButton("Sauvegarder");
+		JLabel opacity = new JLabel("Opacité :");
+		slide = new JSlider();
+	    slide.setMaximum(100);
+	    slide.setMinimum(0);
+	    slide.setValue(70);
+	    slide.setPaintTicks(true);
+	    slide.setPaintLabels(true);
+	    slide.setMinorTickSpacing(10);
+	    slide.setMajorTickSpacing(20);
+		save.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
+				view2.setColorMap(colorListe.getSelectedValue());
+				Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), gazDatas.getMaxLatitude(), gazDatas.getMinLatitude(), gazDatas.getMaxLongitude(), gazDatas.getMinLongitude());
+			}
+		});
+		botSide.add(opacity);
+		botSide.add(slide);
+		botSide.add(save);
+		center.add(botSide, BorderLayout.SOUTH);
+		
 		finalView.add(view, BorderLayout.CENTER);
-		finalView.add(listePanel, BorderLayout.EAST);
+		finalView.add(center, BorderLayout.EAST);
 		colorListe.setSelectedIndex(0);
 		finalView.validate();
 	}
@@ -173,7 +208,7 @@ public class Window implements Runnable {
 		panel9.add(new JLabel("Choisissez une résolution :", JLabel.CENTER));
 		JPanel panel10 = new JPanel();
 		Box box2 = Box.createHorizontalBox();
-		int originalWidth = 50;
+		int originalWidth = 500;
 		width = new JTextField("" + originalWidth);
 		height = new JTextField("" + (int) ((double) originalWidth * (gazDatas.getMaxLatitude() - gazDatas.getMinLatitude()) / (gazDatas.getMaxLongitude() - gazDatas.getMinLongitude())));
 		width.setPreferredSize(new Dimension(50, 20));

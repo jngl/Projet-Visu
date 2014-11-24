@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <GroundOverlay>
+    <name>Overlay on terrain</name>
+    <visibility>1</visibility>
+    <description>Overlay</description>
+    <Icon>
+      <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\particulepm10aout2012.png</href>
+    </Icon>
+    <LatLonBox>
+      <north>46.1939</north>
+      <south>44.352</south>
+      <east>6.86993</east>
+      <west>4.07465</west>
+      <rotation>-0.1556640799496235</rotation>
+    </LatLonBox>
+  </GroundOverlay>
+</kml>
