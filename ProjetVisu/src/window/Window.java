@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -163,7 +164,9 @@ public class Window implements Runnable {
 				fillChargement();
 				run();
 				try {
-					new LoadingInterpolatedDatas(gazDatas, Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0),
+					Date selectedDate = Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0);
+					System.out.println(Utils.getString(selectedDate));
+					new LoadingInterpolatedDatas(gazDatas, selectedDate,
 							methode, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()), thisWindow);
 				} catch (NumberFormatException | MyOutOfBoundException e1) {
 					e1.printStackTrace();
