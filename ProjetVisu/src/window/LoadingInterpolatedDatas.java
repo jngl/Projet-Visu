@@ -26,6 +26,6 @@ public class LoadingInterpolatedDatas implements Runnable {
 	}
 
 	public void run() {
-		new InterpolatedDatas(gazDatas, date, method, 1, width, height, window);
+		new InterpolatedDatas(gazDatas, date, method, 2, width, height, window);
 	}
 }

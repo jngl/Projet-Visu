@@ -24,6 +24,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import utils.Utils;
 import datas.GazDatas;
@@ -33,6 +35,7 @@ import exception.MyOutOfBoundException;
 public class Window implements Runnable {
 	private JFrame window;
 	private JList<String> liste;
+	private JList<File> colorListe;
 	private DrawArea view;
 	private State state;
 	private JButton open;
@@ -40,6 +43,7 @@ public class Window implements Runnable {
 	private CardLayout cl;
 	private JPanel openOptions;
 	private JPanel chargement;
+	private JPanel finalView;
 	private LoadingBar loadingBar;
 	
 	private String selectedValue;
@@ -56,8 +60,9 @@ public class Window implements Runnable {
 	private InterpolatedDatas interpolatedDatas;
 	
 	private File[] files;
+	private File[] colorMaps;
 	
-	public enum State {launch, openOptions, chargement}
+	public enum State {launch, openOptions, chargement, finalView}
 	
 	public Window() {
 		thisWindow = this;
@@ -78,9 +83,8 @@ public class Window implements Runnable {
 		clPanel.add(openOptions, State.openOptions.toString());
 		chargement = new JPanel();
 		clPanel.add(chargement, State.chargement.toString());
-		
-		view = new DrawArea();
-
+		finalView = new JPanel();
+		clPanel.add(finalView, State.finalView.toString());
 		SwingUtilities.invokeLater(this);
 	}
 
@@ -92,6 +96,34 @@ public class Window implements Runnable {
 	public void changeState(State state) {
 		this.state = state;
 		run();
+	}
+	
+	private void fillFinalView() {
+		finalView.removeAll();
+		finalView.setLayout(new BorderLayout());
+
+		File cMaps = new File(System.getProperty("user.dir") + File.separator + "ColorMaps");
+		colorMaps = cMaps.listFiles();
+		
+		colorListe = new JList<File>(colorMaps);
+		colorListe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		colorListe.setCellRenderer(new ColorMapListCellRenderer());
+		colorListe.setVisibleRowCount(-1);
+		JScrollPane listePanel = new JScrollPane(colorListe);
+		listePanel.setPreferredSize(new Dimension(180, Integer.MAX_VALUE));
+		
+		colorListe.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if(!e.getValueIsAdjusting())
+					view.setColorMap(colorListe.getSelectedValue());
+			}
+		});
+		
+		view = new DrawArea(interpolatedDatas);
+		finalView.add(view, BorderLayout.CENTER);
+		finalView.add(listePanel, BorderLayout.EAST);
+		colorListe.setSelectedIndex(0);
+		finalView.validate();
 	}
 	
 	private void fillOpenOptions() {
@@ -165,7 +197,6 @@ public class Window implements Runnable {
 				run();
 				try {
 					Date selectedDate = Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0);
-					System.out.println(Utils.getString(selectedDate));
 					new LoadingInterpolatedDatas(gazDatas, selectedDate,
 							methode, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()), thisWindow);
 				} catch (NumberFormatException | MyOutOfBoundException e1) {
@@ -213,6 +244,9 @@ public class Window implements Runnable {
 	
 	public void setInterpolatedDatas(InterpolatedDatas datas) {
 		interpolatedDatas = datas;
+		state = State.finalView;
+		fillFinalView();
+		run();
 	}
 	
 	private void fillLeftSide() {

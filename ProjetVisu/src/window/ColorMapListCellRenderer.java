@@ -54,8 +54,8 @@ public class ColorMapListCellRenderer extends DefaultListCellRenderer {
             int columnStart = 1;
             while(line.length > 1) {
                 ColorMapColor newColor = new ColorMapColor(line);
-                int columnEnd = (int) ((newColor.x + 1.0) * (double) (imageWidth - 2)) + 1;
-                for(int column = columnStart; column <= columnEnd; ++column) {
+                int columnEnd = (int) ((newColor.x + 1.0)/2.0 * (double) (imageWidth - 2) + 1.1);
+                for(int column = columnStart; column < columnEnd; ++column) {
                 	float percentageStart = 1.0f - (float) (column - columnStart) / (float) (columnEnd - columnStart);
                 	float r = percentageStart * (float) lastColor.r + (1.0f - percentageStart) * (float) newColor.r;
                 	float g = percentageStart * (float) lastColor.g + (1.0f - percentageStart) * (float) newColor.g;
