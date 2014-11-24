@@ -35,6 +35,10 @@ public class InterpolatedDatas {
 		minValue = Double.MAX_VALUE;
 		maxValue = Double.MIN_VALUE;
 		
+		if(method == HardyMethod){
+			
+		}
+		
 		for(int line = 0; line < height; ++line) {
 			for(int column = 0; column < width; ++column) {
 				if(method == ShepardMethod) {
