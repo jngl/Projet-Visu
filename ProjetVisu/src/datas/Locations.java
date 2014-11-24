@@ -28,6 +28,8 @@ public class Locations {
 		indicatif = new int[nb_sites];
 		coord_long = new double[nb_sites];
 		coord_lat = new double[nb_sites];
+		boolean[] keep = new boolean[nb_sites];
+		int suppr = 0;
 		for(int i = begin_line; i < begin_line + nb_sites; ++i) {
 			indicatif[i - begin_line] = Integer.parseInt(file1.datas.getData(i, indicatif_colonne));
 			nom[i - begin_line] = file1.datas.getData(i, nom_colonne);
@@ -37,8 +39,31 @@ public class Locations {
 			int line = file2.datas.searchInColumn(file1.datas.getData(i, indicatif_colonne), 1);
 			if(line != -1) {
 				nom[i - begin_line] = file2.datas.getData(line, 0);
+				keep[i - begin_line] = true;
+			}
+			else {
+				keep[i - begin_line] = false;
+				++suppr;
 			}
 		}
+		String[] newNom = new String[nb_sites - suppr];
+		int[] newIndicatif = new int[nb_sites - suppr];
+		double[] newCoord_long = new double[nb_sites - suppr];
+		double[] newCoord_lat = new double[nb_sites - suppr];
+		int curr = 0;
+		for(int i = 0; i < nb_sites; ++i) {
+			if(keep[i]) {
+				newNom[curr] = nom[i];
+				newIndicatif[curr] = indicatif[i];
+				newCoord_long[curr] = coord_long[i];
+				newCoord_lat[curr] = coord_lat[i];
+				++curr;
+			}
+		}
+		nom = newNom;
+		indicatif = newIndicatif;
+		coord_long = newCoord_long;
+		coord_lat = newCoord_lat;
 	}
 	
 	public static Locations getInstance() {

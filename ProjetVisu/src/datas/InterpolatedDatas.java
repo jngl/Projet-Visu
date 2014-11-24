@@ -50,8 +50,9 @@ public class InterpolatedDatas {
 			
 			int N=gazDatas.getUniqueDateDatas().size();
 			double[][] matrix = new double[N][N];
-			
+			Point2D.Double[] tab = new Point2D.Double[N];
 			for(int line = 0; line <  N; ++line){
+				tab[line] = gazDatas.getUniqueDateDatas().get(line).x;
 				for(int column = 0; column < N; ++column){
 					
 					Point2D.Double p1 = gazDatas.getUniqueDateDatas().get(line).x;
@@ -61,6 +62,13 @@ public class InterpolatedDatas {
 
 				}
 			}
+			for(int i = 0; i < tab.length - 1; ++i) {
+				for(int j = 1; j < tab.length; ++j) {
+					if(i != j && (tab[i].x == tab[j].x && tab[i].y == tab[j].y))
+						System.out.println(i + " " + j +" same value sur " + N);
+				}
+			}
+			System.out.println(tab[1].x + " " + tab[35].y);
 			
 			double[] vecF = new double[N];
 			
@@ -69,6 +77,7 @@ public class InterpolatedDatas {
 			}
 			
 			RealMatrix coefficients = new Array2DRowRealMatrix(matrix, false);
+			System.out.println(new LUDecomposition(coefficients).getDeterminant());
 			DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
 			RealVector constants = new ArrayRealVector(vecF, false);
 			RealVector solution = solver.solve(constants);
