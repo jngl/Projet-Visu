@@ -44,15 +44,13 @@ public class InterpolatedDatas {
 		pixelWidth = (maxLongitude - minLongitude) / (double)(width - 1);
 		minValue = Double.MAX_VALUE;
 		maxValue = Double.MIN_VALUE;
+		gazDatas.setUniqueDate(this.date);
 		
 		if(method == HardyMethod){
-			gazDatas.setUniqueDate(this.date);
 			
 			int N=gazDatas.getUniqueDateDatas().size();
 			double[][] matrix = new double[N][N];
-			Point2D.Double[] tab = new Point2D.Double[N];
 			for(int line = 0; line <  N; ++line){
-				tab[line] = gazDatas.getUniqueDateDatas().get(line).x;
 				for(int column = 0; column < N; ++column){
 					
 					Point2D.Double p1 = gazDatas.getUniqueDateDatas().get(line).x;
@@ -69,9 +67,9 @@ public class InterpolatedDatas {
 				vecF[i]=gazDatas.getUniqueDateDatas().get(i).y;
 			}
 			
-			RealMatrix coefficients = new Array2DRowRealMatrix(matrix, false);
+			RealMatrix coefficients = new Array2DRowRealMatrix(matrix);
 			DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
-			RealVector constants = new ArrayRealVector(vecF, false);
+			RealVector constants = new ArrayRealVector(vecF);
 			RealVector solution = solver.solve(constants);
 			
 			hardyAlpha = solution.toArray();
@@ -96,6 +94,7 @@ public class InterpolatedDatas {
 				}
 			}
 		}
+		System.out.println(minValue + " " + maxValue);
 		if(window != null) {
 			window.setInterpolatedDatas(this);
 		}
@@ -105,10 +104,9 @@ public class InterpolatedDatas {
 		Point2D.Double point = getEarthPostions(line, column);
 		double sumValues = 0;
 		double sumDist = 0;
-		gazDatas.setUniqueDate(date);
 		for(int i = 0; i < gazDatas.getUniqueDateDatas().size(); ++i) {
 			double dist = 1.0/Math.pow(point.distance(gazDatas.getUniqueDateDatas().get(i).x), ShepardPower);
-			sumValues += dist * gazDatas.getUniqueDateDatas().get(i).y;
+			sumValues += (dist * gazDatas.getUniqueDateDatas().get(i).y);
 			sumDist += dist;
 		}
 		return sumValues / sumDist;
