@@ -8,14 +8,17 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,6 +67,9 @@ public class Window implements Runnable {
 	
 	private InterpolatedDatas interpolatedDatas;
 	
+	JCheckBox isoValeur;
+	JTextField text;
+	
 	private File[] files;
 	private File[] colorMaps;
 	
@@ -103,6 +109,29 @@ public class Window implements Runnable {
 		run();
 	}
 	
+	private void save() {
+		if(!isoValeur.isSelected()) {
+			DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
+			view2.setColorMap(colorListe.getSelectedValue());
+			Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas.getMaxLatitude(), interpolatedDatas.getMinLatitude(), interpolatedDatas.getMaxLongitude(), interpolatedDatas.getMinLongitude());
+		}
+		else {
+			state = State.chargement;
+			double isoValue = Double.parseDouble(text.getText().replace(',', '.'));
+			fillChargement("Creation de l'IsoCourbe :");
+			run();
+			new LoadingIsoValues(interpolatedDatas, isoValue, this);
+		}
+	}
+	
+	public void setIsoValue(List<List<Point2D.Double>> isoLines) {
+		DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
+		view2.setColorMap(colorListe.getSelectedValue());
+		Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas.getMaxLatitude(), interpolatedDatas.getMinLatitude(), interpolatedDatas.getMaxLongitude(), interpolatedDatas.getMinLongitude(), isoLines);
+		state = State.finalView;
+		run();
+	}
+	
 	private void fillFinalView() {
 		finalView.removeAll();
 		finalView.setLayout(new BorderLayout(5, 5));
@@ -132,7 +161,7 @@ public class Window implements Runnable {
 		center.add(pan, BorderLayout.NORTH);
 		center.add(listePanel, BorderLayout.CENTER);
 		JPanel botSide = new JPanel();
-		botSide.setLayout(new GridLayout(3, 1));
+		botSide.setLayout(new GridLayout(6, 1));
 		save = new JButton("Sauvegarder");
 		JLabel opacity = new JLabel("Opacité :");
 		slide = new JSlider();
@@ -145,11 +174,18 @@ public class Window implements Runnable {
 	    slide.setMajorTickSpacing(20);
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
-				view2.setColorMap(colorListe.getSelectedValue());
-				Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), gazDatas.getMaxLatitude(), gazDatas.getMinLatitude(), gazDatas.getMaxLongitude(), gazDatas.getMinLongitude());
+				save();
 			}
 		});
+		JPanel textContener = new JPanel();
+		textContener.setPreferredSize(new Dimension(180, 20));
+		textContener.add(text);
+		double min = (double) ((int) (interpolatedDatas.getMinValue() * 100.0)) / 100.0;
+		double max = (double) ((int) (interpolatedDatas.getMaxValue() * 100.0)) / 100.0;
+		JLabel bornes = new JLabel("min = " + min + " max = " + max);
+		botSide.add(isoValeur);
+		botSide.add(bornes);
+		botSide.add(textContener);
 		botSide.add(opacity);
 		botSide.add(slide);
 		botSide.add(save);
@@ -222,13 +258,22 @@ public class Window implements Runnable {
 		JButton valider = new JButton("Valider");
 		valider.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				isoValeur = new JCheckBox("IsoValeure");
+				text = new JTextField();
+				text.setPreferredSize(new Dimension(180, 20));
+				isoValeur.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						text.setEnabled(isoValeur.isSelected());
+					}
+				});
+				text.setEnabled(false);
 				state = State.chargement;
 				int methode = InterpolatedDatas.HardyMethod;
 				if(shepard.isSelected()) {
 					methode = InterpolatedDatas.ShepardMethod;
 				}
 				String[] date = ((String) day.getSelectedItem()).split("/");
-				fillChargement();
+				fillChargement("Interpolation des donnees :");
 				run();
 				try {
 					Date selectedDate = Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0);
@@ -256,7 +301,7 @@ public class Window implements Runnable {
 		openOptions.validate();
 	}
 	
-	private void fillChargement() {
+	private void fillChargement(String string) {
 		chargement.removeAll();
 		chargement.setLayout(new GridLayout(6, 1));
 		JPanel panel1 = new JPanel();
@@ -267,7 +312,7 @@ public class Window implements Runnable {
 		chargement.add(panel1);
 		chargement.add(panel2);
 		chargement.add(panel3);
-		panel3.add(new JLabel("Chargement :", JLabel.CENTER));
+		panel3.add(new JLabel(string, JLabel.CENTER));
 		panel4.add(loadingBar);
 		chargement.add(panel4);
 		chargement.validate();

@@ -30,7 +30,7 @@ public class InterpolatedDatas {
 	private double pixelWidth;
 	
 	private double[] hardyAlpha;
-	private double hardyR=0.815;
+	private double hardyR;
 	
 	public InterpolatedDatas(GazDatas gazDatas, Date date, int method, double ShepardPower, int width, int height, Window window) {
 		datas = new double[height][width];
@@ -45,6 +45,8 @@ public class InterpolatedDatas {
 		minValue = Double.MAX_VALUE;
 		maxValue = Double.MIN_VALUE;
 		gazDatas.setUniqueDate(this.date);
+		hardyR=0.815;
+		hardyR = Math.sqrt(0.1 * Math.max(gazDatas.getMaxLatitude() - gazDatas.getMinLatitude(), gazDatas.getMaxLongitude() - gazDatas.getMinLongitude()));
 		
 		if(method == HardyMethod){
 			
@@ -56,7 +58,7 @@ public class InterpolatedDatas {
 					Point2D.Double p1 = gazDatas.getUniqueDateDatas().get(line).x;
 					Point2D.Double p2 = gazDatas.getUniqueDateDatas().get(column).x;
 					
-					matrix[line][column]=Math.sqrt(hardyR + Math.pow(p1.distance(p2),2));
+					matrix[line][column]=Math.sqrt(hardyR + Math.pow(p1.x - p2.x,2) + Math.pow(p1.y - p2.y,2));
 
 				}
 			}
@@ -73,6 +75,16 @@ public class InterpolatedDatas {
 			RealVector solution = solver.solve(constants);
 			
 			hardyAlpha = solution.toArray();
+			
+			System.out.println("Test");
+			for(int i = 0; i < N; ++i) {
+				double result=0;
+				for(int j = 0; j < gazDatas.getUniqueDateDatas().size(); ++j){
+					double hkx=Math.sqrt(hardyR+Math.pow(gazDatas.getUniqueDateDatas().get(i).x.x - gazDatas.getUniqueDateDatas().get(j).x.x, 2)+Math.pow(gazDatas.getUniqueDateDatas().get(i).x.y - gazDatas.getUniqueDateDatas().get(j).x.y, 2));
+					result+=hardyAlpha[j]*hkx;
+				}
+				System.out.println("valeur exacte : " + gazDatas.getUniqueDateDatas().get(i).y + " valeur calculée : " + result);
+			}
 		}
 		
 		for(int line = 0; line < height; ++line) {
@@ -80,7 +92,7 @@ public class InterpolatedDatas {
 				if(method == ShepardMethod) {
 					datas[line][column] = fillDatasShepardMethod(line, column, gazDatas);
 				}
-				else if(method ==  HardyMethod) {
+				else {
 					datas[line][column] = fillDatasHardyMethod(line, column, gazDatas);
 				}
 				if(datas[line][column] < minValue) {
@@ -89,12 +101,14 @@ public class InterpolatedDatas {
 				if(datas[line][column] > maxValue) {
 					maxValue = datas[line][column];
 				}
-				if(window != null) {
-					window.setChargement((double) (line * width + column) / (double) (height * width));
-				}
+			}
+			if(window != null) {
+				window.setChargement((double) (line) / (double) (height));
 			}
 		}
-		System.out.println(minValue + " " + maxValue);
+		if(method != ShepardMethod) {
+			System.out.println("minValue = " + minValue + " et maxValue = " + maxValue);
+		}
 		if(window != null) {
 			window.setInterpolatedDatas(this);
 		}
@@ -116,7 +130,7 @@ public class InterpolatedDatas {
 		double result=0;
 		Point2D.Double point = getEarthPostions(line, column);
 		for(int i = 0; i < gazDatas.getUniqueDateDatas().size(); ++i){
-			double hkx=Math.sqrt(hardyR+Math.pow(point.distance(gazDatas.getUniqueDateDatas().get(i).x), 2));
+			double hkx=Math.sqrt(hardyR+Math.pow(point.x - gazDatas.getUniqueDateDatas().get(i).x.x, 2)+Math.pow(point.y - gazDatas.getUniqueDateDatas().get(i).x.y, 2));
 			result+=hardyAlpha[i]*hkx;
 		}
 		return result;
