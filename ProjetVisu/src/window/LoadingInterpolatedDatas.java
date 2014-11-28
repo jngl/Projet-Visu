@@ -1,21 +1,22 @@
 package window;
 
 import java.util.Date;
+import java.util.List;
 
 import datas.GazDatas;
 import datas.InterpolatedDatas;
 
 public class LoadingInterpolatedDatas implements Runnable {
 	private GazDatas gazDatas;
-	private Date date;
+	private List<Date> dates;
 	private int method;
 	private int width;
 	private int height;
 	private Window window;
 	
-	public LoadingInterpolatedDatas(GazDatas gazDatas, Date date, int method, int width, int height, Window window) {
+	public LoadingInterpolatedDatas(GazDatas gazDatas, List<Date> dates, int method, int width, int height, Window window) {
 		this.gazDatas = gazDatas;
-		this.date = date;
+		this.dates = dates;
 		this.method = method;
 		this.width = width;
 		this.height = height;
@@ -26,6 +27,7 @@ public class LoadingInterpolatedDatas implements Runnable {
 	}
 
 	public void run() {
-		new InterpolatedDatas(gazDatas, date, method, 2, width, height, window);
+		for(int i = 0; i < dates.size(); ++i)
+			new InterpolatedDatas(gazDatas, dates.get(i), method, 2, width, height, window);
 	}
 }

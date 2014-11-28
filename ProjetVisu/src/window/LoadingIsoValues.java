@@ -4,11 +4,11 @@ import datas.InterpolatedDatas;
 import datas.IsoValues;
 
 public class LoadingIsoValues implements Runnable {
-	private InterpolatedDatas interpolatedDatas;
+	private InterpolatedDatas[] interpolatedDatas;
 	private Window window;
 	private double isoValue;
 	
-	public LoadingIsoValues(InterpolatedDatas interpolatedDatas, double isoValue, Window window) {
+	public LoadingIsoValues(InterpolatedDatas[] interpolatedDatas, double isoValue, Window window) {
 		this.interpolatedDatas = interpolatedDatas;
 		this.isoValue = isoValue;
 		this.window = window;
@@ -18,6 +18,8 @@ public class LoadingIsoValues implements Runnable {
 	}
 
 	public void run() {
-		new IsoValues(interpolatedDatas, isoValue, window);
+		for(int i = 0; i < interpolatedDatas.length; ++i) {
+			new IsoValues(interpolatedDatas[i], isoValue, window);
+		}
 	}
 }

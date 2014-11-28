@@ -37,4 +37,9 @@ public class Utils {
 		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy-HH:mm:ss");
 		return df.format(date);
 	}
+	
+	public static String getKMLString(Date date) {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss;");
+		return df.format(date).replace(',', 'T').replace(';', 'Z');
+	}
 }

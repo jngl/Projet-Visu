@@ -8,8 +8,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +62,10 @@ public class Window implements Runnable {
 	private JRadioButton shepard;
 	private JComboBox<String> day;
 	private JComboBox<String> hour;
+	private JComboBox<String> day2;
+	private JComboBox<String> hour2;
+	private JComboBox<String> day3;
+	private JComboBox<String> hour3;
 	private JTextField width;
 	private JTextField height;
 	private Window thisWindow;
@@ -65,7 +73,15 @@ public class Window implements Runnable {
 	
 	private GazDatas gazDatas;
 	
-	private InterpolatedDatas interpolatedDatas;
+	private InterpolatedDatas[] interpolatedDatas;
+	
+	public double minInterpolatedValue;
+	public double maxInterpolatedValue;
+	private int numberDifDates;
+	private int currentDifDate;
+	private Date[] difDates;
+	private JLabel textChargement;
+	private List<List<List<Point2D.Double>>> isoLines;
 	
 	JCheckBox isoValeur;
 	JTextField text;
@@ -76,6 +92,9 @@ public class Window implements Runnable {
 	public enum State {launch, openOptions, chargement, finalView}
 	
 	public Window() {
+		isoLines = new ArrayList<List<List<Point2D.Double>>>();
+		minInterpolatedValue = Double.MAX_VALUE;
+		maxInterpolatedValue = Double.MIN_VALUE;
 		thisWindow = this;
 		state = State.launch;
 		window = new JFrame("Projet - Visualisation");
@@ -111,25 +130,41 @@ public class Window implements Runnable {
 	
 	private void save() {
 		if(!isoValeur.isSelected()) {
-			DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
-			view2.setColorMap(colorListe.getSelectedValue());
-			Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas.getMaxLatitude(), interpolatedDatas.getMinLatitude(), interpolatedDatas.getMaxLongitude(), interpolatedDatas.getMinLongitude());
+			BufferedImage[] images = new BufferedImage[interpolatedDatas.length];
+			for(int i = 0; i < interpolatedDatas.length; ++i) {
+				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue);
+				view2.setColorMap(colorListe.getSelectedValue());
+				images[i] = view2.getImage();
+			}
+			Writer.write(images, difDates, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude());
 		}
 		else {
 			state = State.chargement;
 			double isoValue = Double.parseDouble(text.getText().replace(',', '.'));
-			fillChargement("Creation de l'IsoCourbe :");
+			fillChargement("Creation de l'IsoCourbe 1 / " + numberDifDates + " : ");
 			run();
+			currentDifDate = 0;
 			new LoadingIsoValues(interpolatedDatas, isoValue, this);
 		}
 	}
 	
-	public void setIsoValue(List<List<Point2D.Double>> isoLines) {
-		DrawArea view2 = new DrawArea(interpolatedDatas, ((float) slide.getValue()) / 100.0f);
-		view2.setColorMap(colorListe.getSelectedValue());
-		Writer.write(view2.getImage(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas.getMaxLatitude(), interpolatedDatas.getMinLatitude(), interpolatedDatas.getMaxLongitude(), interpolatedDatas.getMinLongitude(), isoLines);
-		state = State.finalView;
-		run();
+	public void setIsoValue(List<List<Point2D.Double>> isoLine) {
+		isoLines.add(isoLine);
+		++currentDifDate;
+		if(currentDifDate < numberDifDates) {
+			textChargement.setText("Creation de l'IsoCourbe " + (1 + currentDifDate) + " sur " + numberDifDates + " : ");
+		}
+		else {
+			BufferedImage[] images = new BufferedImage[interpolatedDatas.length];
+			for(int i = 0; i < interpolatedDatas.length; ++i) {
+				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue);
+				view2.setColorMap(colorListe.getSelectedValue());
+				images[i] = view2.getImage();
+			}
+			Writer.write(images, difDates, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude(), isoLines);
+			state = State.finalView;
+			run();
+		}
 	}
 	
 	private void fillFinalView() {
@@ -152,7 +187,7 @@ public class Window implements Runnable {
 					view.setColorMap(colorListe.getSelectedValue());
 			}
 		});
-		view = new DrawArea(interpolatedDatas);
+		view = new DrawArea(interpolatedDatas[0], minInterpolatedValue, maxInterpolatedValue);
 
 		JPanel center = new JPanel();
 		center.setLayout(new BorderLayout());
@@ -161,7 +196,80 @@ public class Window implements Runnable {
 		center.add(pan, BorderLayout.NORTH);
 		center.add(listePanel, BorderLayout.CENTER);
 		JPanel botSide = new JPanel();
-		botSide.setLayout(new GridLayout(6, 1));
+		if(difDates.length > 1)
+			botSide.setLayout(new GridLayout(7, 1));
+		else
+			botSide.setLayout(new GridLayout(5, 1));
+		JPanel choixDate = new JPanel();
+
+		day3 = new JComboBox<String>();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(difDates[0]);
+		while(!Utils.getString(difDates[difDates.length - 1]).split("-")[0].equals(Utils.getString(cal.getTime()).split("-")[0])) {
+			day3.addItem(Utils.getString(cal.getTime()).split("-")[0]);
+			cal.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		day3.addItem(Utils.getString(cal.getTime()).split("-")[0]);
+		hour3 = new JComboBox<String>();
+		int max;
+		int min;
+		if(Utils.getString(difDates[difDates.length - 1]).split("-")[0].equals((String) day3.getSelectedItem())) {
+			max = Integer.parseInt(Utils.getString(difDates[difDates.length - 1]).split("-")[1].split(":")[0]) + 1;
+		}
+		else {
+			max = 23;
+		}
+		if(Utils.getString(difDates[0]).split("-")[0].equals((String) day3.getSelectedItem())) {
+			min = Integer.parseInt(Utils.getString(difDates[0]).split("-")[1].split(":")[0]);
+		}
+		else {
+			min = 0;
+		}
+		for(int i = Math.max(0, min); i < Math.min(10, max); ++i) {
+			hour3.addItem("0" + i + ":00");
+		}
+		for(int i = Math.max(10, min); i < max + 1; ++i) {
+			hour3.addItem(i + ":00");
+		}
+		hour3.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				changeImage();
+			}
+		});
+		day3.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					int max;
+					int min;
+					int selectedHour = Integer.parseInt(((String) hour3.getSelectedItem()).split(":")[0]);
+					hour3.removeAllItems();
+					if(Utils.getString(difDates[difDates.length - 1]).split("-")[0].equals((String) day3.getSelectedItem())) {
+						max = Integer.parseInt(Utils.getString(difDates[difDates.length - 1]).split("-")[1].split(":")[0]) + 1;
+					}
+					else {
+						max = 23;
+					}
+					if(Utils.getString(difDates[0]).split("-")[0].equals((String) day3.getSelectedItem())) {
+						min = Integer.parseInt(Utils.getString(difDates[0]).split("-")[1].split(":")[0]);
+					}
+					else {
+						min = 0;
+					}
+					for(int i = Math.max(0, min); i < Math.min(10, max); ++i) {
+						hour3.addItem("0" + i + ":00");
+					}
+					for(int i = Math.max(10, min); i < max + 1; ++i) {
+						hour3.addItem(i + ":00");
+					}
+					int selected = selectedHour - min;
+					hour3.setSelectedIndex(Math.max(Math.min(hour3.getItemCount() - 1, selected), 0));
+					changeImage();
+				}
+			}
+		});
+		choixDate.add(day3);
+		choixDate.add(hour3);
+		
 		save = new JButton("Sauvegarder");
 		JLabel opacity = new JLabel("Opacité :");
 		slide = new JSlider();
@@ -180,11 +288,14 @@ public class Window implements Runnable {
 		JPanel textContener = new JPanel();
 		textContener.setPreferredSize(new Dimension(180, 20));
 		textContener.add(text);
-		double min = (double) ((int) (interpolatedDatas.getMinValue() * 100.0)) / 100.0;
-		double max = (double) ((int) (interpolatedDatas.getMaxValue() * 100.0)) / 100.0;
-		JLabel bornes = new JLabel("min = " + min + " max = " + max);
+		double mini = (double) ((int) (minInterpolatedValue * 100.0)) / 100.0;
+		double maxi = (double) ((int) (maxInterpolatedValue * 100.0)) / 100.0;
+		isoValeur.setText("IsoValeure (bornes : " + mini + "/" + maxi + ")");
+		if(difDates.length > 1) {
+			botSide.add(new JLabel("Date a afficher :"));
+			botSide.add(choixDate);
+		}
 		botSide.add(isoValeur);
-		botSide.add(bornes);
 		botSide.add(textContener);
 		botSide.add(opacity);
 		botSide.add(slide);
@@ -195,6 +306,15 @@ public class Window implements Runnable {
 		finalView.add(center, BorderLayout.EAST);
 		colorListe.setSelectedIndex(0);
 		finalView.validate();
+	}
+	
+	private void changeImage() {
+		String search = ((String) day3.getSelectedItem()) + "-" + ((String) hour3.getSelectedItem()) + ":00";
+		int i = 0;
+		while(i < difDates.length && !Utils.getString(difDates[i]).equals(search))
+			++i;
+		if(i < interpolatedDatas.length)
+			view.setInterpolatedDatas(interpolatedDatas[i]);
 	}
 	
 	private void fillOpenOptions() {
@@ -237,8 +357,69 @@ public class Window implements Runnable {
 		for(int i = 10; i < 24; ++i) {
 			hour.addItem(i + ":00");
 		}
+		day.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					int max;
+					int selected = hour.getSelectedIndex();
+					hour.removeAllItems();
+					if(Utils.getString(gazDatas.getEndDate()).split("-")[0].equals((String) day.getSelectedItem())) {
+						max = Integer.parseInt(Utils.getString(gazDatas.getEndDate()).split("-")[1].split(":")[0]);
+					}
+					else {
+						max = 23;
+					}
+					for(int i = 0; i < Math.min(10, max); ++i) {
+						hour.addItem("0" + i + ":00");
+					}
+					for(int i = 10; i < max + 1; ++i) {
+						hour.addItem(i + ":00");
+					}
+					hour.setSelectedIndex(Math.min(hour.getItemCount() - 1, selected));
+					int totalIndice2 = day2.getSelectedIndex() + day.getItemCount() - day2.getItemCount();
+					day2.removeAllItems();
+					for(int i = day.getSelectedIndex(); i < day.getItemCount(); ++i) {
+						day2.addItem(day.getItemAt(i));
+					}
+					day2.setSelectedIndex(Math.max(0, totalIndice2 - (day.getItemCount() - day2.getItemCount())));
+					changeHour2();
+				}
+			}
+		});
+		hour.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					changeHour2();
+				}
+			}
+		});
+		day2 = new JComboBox<String>();
+		cal.setTime(gazDatas.getBeginDate());
+		while(!Utils.getString(gazDatas.getEndDate()).split("-")[0].equals(Utils.getString(cal.getTime()).split("-")[0])) {
+			day2.addItem(Utils.getString(cal.getTime()).split("-")[0]);
+			cal.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		day2.addItem(Utils.getString(cal.getTime()).split("-")[0]);
+		hour2 = new JComboBox<String>();
+		for(int i = 0; i < 10; ++i) {
+			hour2.addItem("0" + i + ":00");
+		}
+		for(int i = 10; i < 24; ++i) {
+			hour2.addItem(i + ":00");
+		}
+		day2.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					changeHour2();
+				}
+			}
+		});
+		panel7.add(new JLabel("Debut : "));
 		panel7.add(day);
 		panel7.add(hour);
+		panel7.add(new JLabel("     Fin : "));
+		panel7.add(day2);
+		panel7.add(hour2);
 		JPanel panel8 = new JPanel();
 		JPanel panel9 = new JPanel();
 		panel9.add(new JLabel("Choisissez une résolution :", JLabel.CENTER));
@@ -273,15 +454,34 @@ public class Window implements Runnable {
 					methode = InterpolatedDatas.ShepardMethod;
 				}
 				String[] date = ((String) day.getSelectedItem()).split("/");
-				fillChargement("Interpolation des donnees :");
-				run();
+				Date selectedDate = null;
+				String[] date2 = ((String) day2.getSelectedItem()).split("/");
+				Date selectedDate2 = null;
+				List<Date> allDates = new ArrayList<Date>();
 				try {
-					Date selectedDate = Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0);
-					new LoadingInterpolatedDatas(gazDatas, selectedDate,
-							methode, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()), thisWindow);
+					selectedDate = Utils.getDate(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(((String) hour.getSelectedItem()).split(":")[0]), 0, 0);
+					selectedDate2 = Utils.getDate(Integer.parseInt(date2[0]), Integer.parseInt(date2[1]), Integer.parseInt(date2[2]), Integer.parseInt(((String) hour2.getSelectedItem()).split(":")[0]), 0, 0);
 				} catch (NumberFormatException | MyOutOfBoundException e1) {
 					e1.printStackTrace();
 				}
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(selectedDate);
+				while(!Utils.getString(selectedDate2).equals(Utils.getString(cal.getTime()))) {
+					allDates.add(cal.getTime());
+					cal.add(Calendar.HOUR_OF_DAY, 1);
+				}
+				allDates.add(cal.getTime());
+				numberDifDates = allDates.size();
+				currentDifDate = 0;
+				difDates = new Date[numberDifDates];
+				for(int i = 0; i < numberDifDates; ++i) {
+					difDates[i] = allDates.get(i);
+				}
+				interpolatedDatas = new InterpolatedDatas[numberDifDates];
+				fillChargement("Interpolation des donnees 1 / " + numberDifDates + " : ");
+				run();
+				new LoadingInterpolatedDatas(gazDatas, allDates,
+						methode, Integer.parseInt(width.getText()), Integer.parseInt(height.getText()), thisWindow);
 			}
 		});
 		panel12.add(valider);
@@ -301,6 +501,33 @@ public class Window implements Runnable {
 		openOptions.validate();
 	}
 	
+	private void changeHour2() {
+		int max;
+		int min;
+		int selectedHour = Integer.parseInt(((String) hour2.getSelectedItem()).split(":")[0]);
+		hour2.removeAllItems();
+		if(Utils.getString(gazDatas.getEndDate()).split("-")[0].equals((String) day2.getSelectedItem())) {
+			max = Integer.parseInt(Utils.getString(gazDatas.getEndDate()).split("-")[1].split(":")[0]);
+		}
+		else {
+			max = 23;
+		}
+		if(((String) day2.getSelectedItem()).equals((String) day.getSelectedItem())) {
+			min = Integer.parseInt(((String)hour.getSelectedItem()).split(":")[0]);
+		}
+		else {
+			min = 0;
+		}
+		for(int i = Math.max(0, min); i < Math.min(10, max); ++i) {
+			hour2.addItem("0" + i + ":00");
+		}
+		for(int i = Math.max(10, min); i < max + 1; ++i) {
+			hour2.addItem(i + ":00");
+		}
+		int selected = selectedHour - min;
+		hour2.setSelectedIndex(Math.max(Math.min(hour2.getItemCount() - 1, selected), 0));
+	}
+	
 	private void fillChargement(String string) {
 		chargement.removeAll();
 		chargement.setLayout(new GridLayout(6, 1));
@@ -312,7 +539,8 @@ public class Window implements Runnable {
 		chargement.add(panel1);
 		chargement.add(panel2);
 		chargement.add(panel3);
-		panel3.add(new JLabel(string, JLabel.CENTER));
+		textChargement = new JLabel(string, JLabel.CENTER);
+		panel3.add(textChargement);
 		panel4.add(loadingBar);
 		chargement.add(panel4);
 		chargement.validate();
@@ -323,10 +551,20 @@ public class Window implements Runnable {
 	}
 	
 	public void setInterpolatedDatas(InterpolatedDatas datas) {
-		interpolatedDatas = datas;
-		state = State.finalView;
-		fillFinalView();
-		run();
+		if(datas.getMaxValue() > maxInterpolatedValue)
+			maxInterpolatedValue = datas.getMaxValue();
+		if(datas.getMinValue() < minInterpolatedValue)
+			minInterpolatedValue = datas.getMinValue();
+		interpolatedDatas[currentDifDate] = datas;
+		++currentDifDate;
+		if(currentDifDate < numberDifDates) {
+			textChargement.setText("Interpolation des donnees " + (1 + currentDifDate) + " sur " + numberDifDates + " : ");
+		}
+		else {
+			state = State.finalView;
+			fillFinalView();
+			run();
+		}
 	}
 	
 	private void fillLeftSide() {

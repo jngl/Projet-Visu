@@ -15,6 +15,7 @@ import utils.Strings;
 import datas.InterpolatedDatas;
 
 public class DrawArea extends JPanel {
+	private InterpolatedDatas interpolatedDatas;
 	private static final long serialVersionUID = 1L;
 	private ColorMap colorMap;
 	private double[][] datas;
@@ -23,20 +24,34 @@ public class DrawArea extends JPanel {
 	private BufferedImage image;
 	private float opacity;
 
-	public DrawArea(InterpolatedDatas interpolatedDatas) {
+	public DrawArea(InterpolatedDatas interpolatedDatas, double minValue, double maxValue) {
 		opacity = 1.0f;
+		this.interpolatedDatas = interpolatedDatas;
 		datas = interpolatedDatas.getDatas();
-		minValue = interpolatedDatas.getMinValue();
-		maxValue = interpolatedDatas.getMaxValue();
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 		image = new BufferedImage(datas[0].length, datas.length, BufferedImage.TYPE_INT_ARGB);
 	}
 
-	public DrawArea(InterpolatedDatas interpolatedDatas, float opacity) {
+	public DrawArea(InterpolatedDatas interpolatedDatas, float opacity, double minValue, double maxValue) {
 		this.opacity = opacity;
 		datas = interpolatedDatas.getDatas();
-		minValue = interpolatedDatas.getMinValue();
-		maxValue = interpolatedDatas.getMaxValue();
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 		image = new BufferedImage(datas[0].length, datas.length, BufferedImage.TYPE_INT_ARGB);
+	}
+	
+	public void setInterpolatedDatas(InterpolatedDatas interpolatedDatas) {
+		if(this.interpolatedDatas != interpolatedDatas) {
+			this.interpolatedDatas = interpolatedDatas;
+			this.datas = interpolatedDatas.getDatas();
+			for(int i = 0; i < datas.length; ++i) {
+				for(int j = 0; j < datas[0].length; ++j) {
+					image.setRGB(j, i, this.colorMap.getColor(datas[i][j]));
+				}
+			}
+			repaint();
+		}
 	}
 	
 	public void setColorMap(File colorMap) {
