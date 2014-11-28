@@ -91,7 +91,7 @@ public class DrawArea extends JPanel {
 		
 		public int getColor(double value) {
 			int i = 0;
-			while(value > colors.get(i + 1).x)
+			while(value > colors.get(i + 1).x && i != colors.size() - 2)
 				++i;
 			float percentageEnd = (float) ((value - colors.get(i).x) / (colors.get(i + 1).x - colors.get(i).x));
 			float percentageStart = 1.0f - percentageEnd;
