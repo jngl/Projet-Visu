@@ -47,6 +47,7 @@ public class InterpolatedDatas {
 		gazDatas.setUniqueDate(this.date);
 		hardyR=0.815;
 		hardyR = Math.sqrt(0.1 * Math.max(gazDatas.getMaxLatitude() - gazDatas.getMinLatitude(), gazDatas.getMaxLongitude() - gazDatas.getMinLongitude()));
+		hardyR = hardyR * hardyR;
 		
 		if(method == HardyMethod){
 			
@@ -77,14 +78,15 @@ public class InterpolatedDatas {
 			hardyAlpha = solution.toArray();
 			
 			System.out.println("Test");
-			for(int i = 0; i < N; ++i) {
+			for(int j = 0; j < N; ++j) {
 				double result=0;
-				for(int j = 0; j < gazDatas.getUniqueDateDatas().size(); ++j){
-					double hkx=Math.sqrt(hardyR+Math.pow(gazDatas.getUniqueDateDatas().get(i).x.x - gazDatas.getUniqueDateDatas().get(j).x.x, 2)+Math.pow(gazDatas.getUniqueDateDatas().get(i).x.y - gazDatas.getUniqueDateDatas().get(j).x.y, 2));
-					result+=hardyAlpha[j]*hkx;
+				for(int i = 0; i < gazDatas.getUniqueDateDatas().size(); ++i){
+					result+=hardyAlpha[i]*Math.sqrt(hardyR+Math.pow(gazDatas.getUniqueDateDatas().get(j).x.distance(gazDatas.getUniqueDateDatas().get(i).x), 2));
 				}
-				System.out.println("valeur exacte : " + gazDatas.getUniqueDateDatas().get(i).y + " valeur calculée : " + result);
+				System.out.println("valeur exacte : " + gazDatas.getUniqueDateDatas().get(j).y + " valeur calculée : " + result);
 			}
+			for(int i = 0; i < N; ++i)
+				System.out.println("hardyAlpha["+i+"] = " + hardyAlpha[i]);
 		}
 		
 		for(int line = 0; line < height; ++line) {
@@ -130,8 +132,7 @@ public class InterpolatedDatas {
 		double result=0;
 		Point2D.Double point = getEarthPostions(line, column);
 		for(int i = 0; i < gazDatas.getUniqueDateDatas().size(); ++i){
-			double hkx=Math.sqrt(hardyR+Math.pow(point.x - gazDatas.getUniqueDateDatas().get(i).x.x, 2)+Math.pow(point.y - gazDatas.getUniqueDateDatas().get(i).x.y, 2));
-			result+=hardyAlpha[i]*hkx;
+			result+=hardyAlpha[i]*Math.sqrt(hardyR+Math.pow(point.distance(gazDatas.getUniqueDateDatas().get(i).x), 2));
 		}
 		return result;
 	}

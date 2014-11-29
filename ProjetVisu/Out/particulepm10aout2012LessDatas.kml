@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Folder>
+    <Placemark>
+      <name>Villefranche périurbain - Périurbain </name>
+      <description>
+        Value = 15.0
+        Longitude = 4.79611
+        Latitude = 45.9363
+      </description>
+      <Point>
+        <coordinates>4.79611,45.9363,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Drôme provençale - Rurale nationale </name>
+      <description>
+        Value = 19.0
+        Longitude = 4.85401
+        Latitude = 44.352
+      </description>
+      <Point>
+        <coordinates>4.85401,44.352,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Romans Sur Isère - Urbain </name>
+      <description>
+        Value = 18.0
+        Longitude = 5.04413
+        Latitude = 45.0422
+      </description>
+      <Point>
+        <coordinates>5.04413,45.0422,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Valence Sud - Périurbain </name>
+      <description>
+        Value = 20.0
+        Longitude = 4.87629
+        Latitude = 44.8703
+      </description>
+      <Point>
+        <coordinates>4.87629,44.8703,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Annecy Novel - Périurbain </name>
+      <description>
+        Value = 10.0
+        Longitude = 6.13566
+        Latitude = 45.9171
+      </description>
+      <Point>
+        <coordinates>6.13566,45.9171,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Chamonix - Urbain </name>
+      <description>
+        Value = 16.0
+        Longitude = 6.86993
+        Latitude = 45.9226
+      </description>
+      <Point>
+        <coordinates>6.86993,45.9226,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Est grenoblois / Grésivaudan - Périurbain </name>
+      <description>
+        Value = 12.0
+        Longitude = 5.8824
+        Latitude = 45.28
+      </description>
+      <Point>
+        <coordinates>5.8824,45.28,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Saint-Martin d'Heres - Urbain </name>
+      <description>
+        Value = 18.0
+        Longitude = 5.75325
+        Latitude = 45.183
+      </description>
+      <Point>
+        <coordinates>5.75325,45.183,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Vienne Centre - Urbain </name>
+      <description>
+        Value = 22.0
+        Longitude = 4.87541
+        Latitude = 45.526
+      </description>
+      <Point>
+        <coordinates>4.87541,45.526,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Voiron Urbain - Urbain </name>
+      <description>
+        Value = 16.0
+        Longitude = 5.58943
+        Latitude = 45.3602
+      </description>
+      <Point>
+        <coordinates>5.58943,45.3602,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Est stéphanois / Saint-Chamond - Urbain </name>
+      <description>
+        Value = 8.0
+        Longitude = 4.51501
+        Latitude = 45.4754
+      </description>
+      <Point>
+        <coordinates>4.51501,45.4754,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Roanne - Urbain </name>
+      <description>
+        Value = 11.0
+        Longitude = 4.07465
+        Latitude = 46.0413
+      </description>
+      <Point>
+        <coordinates>4.07465,46.0413,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Saint-Etienne Sud - Urbain </name>
+      <description>
+        Value = 26.0
+        Longitude = 4.39543
+        Latitude = 45.4201
+      </description>
+      <Point>
+        <coordinates>4.39543,45.4201,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lyon Centre - Urbain </name>
+      <description>
+        Value = 17.0
+        Longitude = 4.85422
+        Latitude = 45.7578
+      </description>
+      <Point>
+        <coordinates>4.85422,45.7578,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Albertville - Urbain </name>
+      <description>
+        Value = 13.0
+        Longitude = 6.3896
+        Latitude = 45.6751
+      </description>
+      <Point>
+        <coordinates>6.3896,45.6751,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Chambéry Pasteur - Urbain </name>
+      <description>
+        Value = 20.0
+        Longitude = 5.92844
+        Latitude = 45.5646
+      </description>
+      <Point>
+        <coordinates>5.92844,45.5646,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Saint-Jean de Maurienne - Urbain </name>
+      <description>
+        Value = 12.0
+        Longitude = 6.3496
+        Latitude = 45.2747
+      </description>
+      <Point>
+        <coordinates>6.3496,45.2747,0</coordinates>
+      </Point>
+    </Placemark>
+    <GroundOverlay>
+      <TimeSpan>
+        <begin>0012-08-01T00:00:00Z</begin>
+        <end>0012-08-01T00:59:59Z</end>
+      </TimeSpan>
+      <name>Overlay on terrain</name>
+      <visibility>1</visibility>
+      <description>Overlay</description>
+      <Icon>
+        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\particulepm10aout2012LessDatas_Images\particulepm10aout2012LessDatas_0.png</href>
+      </Icon>
+      <LatLonBox>
+        <north>46.21023</north>
+        <south>44.183069999999994</south>
+        <east>7.149458</east>
+        <west>3.795122</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+  </Folder>
+</kml>

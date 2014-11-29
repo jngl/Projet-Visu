@@ -438,43 +438,5 @@
         <rotation>-0.1556640799496235</rotation>
       </LatLonBox>
     </GroundOverlay>
-    <GroundOverlay>
-      <TimeSpan>
-        <begin>0012-08-01T01:00:00Z</begin>
-        <end>0012-08-01T01:59:59Z</end>
-      </TimeSpan>
-      <name>Overlay on terrain</name>
-      <visibility>1</visibility>
-      <description>Overlay</description>
-      <Icon>
-        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\particulepm10aout2012_Images\particulepm10aout2012_1.png</href>
-      </Icon>
-      <LatLonBox>
-        <north>46.37809</north>
-        <south>44.167809999999996</south>
-        <east>7.149458</east>
-        <west>3.795122</west>
-        <rotation>-0.1556640799496235</rotation>
-      </LatLonBox>
-    </GroundOverlay>
-    <GroundOverlay>
-      <TimeSpan>
-        <begin>0012-08-01T02:00:00Z</begin>
-        <end>0012-08-01T02:59:59Z</end>
-      </TimeSpan>
-      <name>Overlay on terrain</name>
-      <visibility>1</visibility>
-      <description>Overlay</description>
-      <Icon>
-        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\particulepm10aout2012_Images\particulepm10aout2012_2.png</href>
-      </Icon>
-      <LatLonBox>
-        <north>46.37809</north>
-        <south>44.167809999999996</south>
-        <east>7.149458</east>
-        <west>3.795122</west>
-        <rotation>-0.1556640799496235</rotation>
-      </LatLonBox>
-    </GroundOverlay>
   </Folder>
 </kml>
