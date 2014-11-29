@@ -31,7 +31,7 @@ public class Main {
 			for(int i = 0; i < 200; ++i)
 				for(int j = 0; j < 200; ++j)
 					image.setRGB(i, j, ((255 - i) << 24) | (255 << 16));
-			Writer.write(tab, dates, "Red", 37, 35, 16, 14);
+			Writer.write(tab, dates, null, "Red", 37, 35, 16, 14);
 		}
 		
 		public static void printLocations() {

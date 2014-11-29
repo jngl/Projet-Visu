@@ -84,6 +84,7 @@ public class Window implements Runnable {
 	private JLabel textChargement;
 	private List<List<List<Point2D.Double>>> isoLines;
 	private boolean usePertinance;
+	private boolean useStations;
 	
 	JCheckBox isoValeur;
 	JTextField text;
@@ -152,7 +153,12 @@ public class Window implements Runnable {
 				view2.setColorMap(colorListe.getSelectedValue());
 				images[i] = view2.getImage();
 			}
-			Writer.write(images, difDates, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude());
+			if(useStations) {
+				Writer.write(images, difDates, gazDatas.getStations(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude());
+			}
+			else {
+				Writer.write(images, difDates, null, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude());
+			}
 		}
 		else {
 			state = State.chargement;
@@ -178,7 +184,12 @@ public class Window implements Runnable {
 				view2.setColorMap(colorListe.getSelectedValue());
 				images[i] = view2.getImage();
 			}
-			Writer.write(images, difDates, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude(), isoLines);
+			if(useStations) {
+				Writer.write(images, difDates, gazDatas.getStations(), selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude(), isoLines);
+			}
+			else {
+				Writer.write(images, difDates, null, selectedValue.substring(0, selectedValue.length() - 4), interpolatedDatas[0].getMaxLatitude(), interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude(), interpolatedDatas[0].getMinLongitude(), isoLines);
+			}
 			state = State.finalView;
 			run();
 		}
@@ -215,9 +226,9 @@ public class Window implements Runnable {
 		center.add(listePanel, BorderLayout.CENTER);
 		JPanel botSide = new JPanel();
 		if(difDates.length > 1)
-			botSide.setLayout(new GridLayout(8, 1));
+			botSide.setLayout(new GridLayout(9, 1));
 		else
-			botSide.setLayout(new GridLayout(6, 1));
+			botSide.setLayout(new GridLayout(7, 1));
 		JPanel choixDate = new JPanel();
 
 		day3 = new JComboBox<String>();
@@ -296,7 +307,12 @@ public class Window implements Runnable {
 				view.repaint();
 			}
 		});
-		
+		JCheckBox jStations = new JCheckBox("Afficher les stations");
+		jStations.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				useStations = useStations == false;
+			}
+		});
 		save = new JButton("Sauvegarder");
 		JLabel opacity = new JLabel("Opacité :");
 		slide = new JSlider();
@@ -325,6 +341,7 @@ public class Window implements Runnable {
 		botSide.add(isoValeur);
 		botSide.add(textContener);
 		botSide.add(jPertinence);
+		botSide.add(jStations);
 		botSide.add(opacity);
 		botSide.add(slide);
 		botSide.add(save);
@@ -622,6 +639,7 @@ public class Window implements Runnable {
 		open.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				usePertinance = false;
+				useStations = false;
 				isoLines = new ArrayList<List<List<Point2D.Double>>>();
 				minInterpolatedValue = Double.MAX_VALUE;
 				maxInterpolatedValue = Double.MIN_VALUE;

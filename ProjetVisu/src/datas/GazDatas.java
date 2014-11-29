@@ -17,6 +17,7 @@ public class GazDatas {
 	private static final int beginDataColumn = 1;
 	
 	private List<List<Tuple<Point2D.Double, Double>>> datas;
+	private List<Tuple<Point2D.Double, Tuple<Double, String>>> stations;
 	private List<Date> dates;
 	private double minLatitude;
 	private double maxLatitude;
@@ -24,6 +25,7 @@ public class GazDatas {
 	private double maxLongitude;
 	
 	public GazDatas(String path) {
+		stations = new ArrayList<Tuple<Point2D.Double, Tuple<Double, String>>>();
 		minLatitude = Double.MAX_VALUE;
 		minLongitude = Double.MAX_VALUE;
 		maxLatitude = Double.MIN_VALUE;
@@ -59,6 +61,9 @@ public class GazDatas {
 							maxLongitude = locations.coord_long[index];
 						if(locations.coord_long[index] < minLongitude)
 							minLongitude = locations.coord_long[index];
+						if(col == beginDataColumn)
+							stations.add(new Tuple<Point2D.Double, Tuple<Double,String>>(new Point2D.Double(locations.coord_long[index], locations.coord_lat[index]),
+									new Tuple<Double, String>(Double.parseDouble(file.datas.getData(line, col).replace(',', '.')), locations.nom[index])));
 					}
 				}
 				++line;
@@ -124,5 +129,9 @@ public class GazDatas {
 
 	public double getMaxLongitude() {
 		return maxLongitude;
+	}
+	
+	public List<Tuple<java.awt.geom.Point2D.Double, Tuple<Double, String>>> getStations() {
+		return stations;
 	}
 }

@@ -1,5 +1,6 @@
-/datas/
-/window/
-/io/
+/datas
+/exception
+/io
 /main
-/utils/
+/utils
+/window

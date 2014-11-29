@@ -13,11 +13,12 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import utils.Tuple;
 import utils.Utils;
 
 public class Writer {
 
-	public static void write(BufferedImage[] image, Date[] dates, String name, double north, double south, double east, double west) {
+	public static void write(BufferedImage[] image, Date[] dates, List<Tuple<Point2D.Double, Tuple<Double, String>>> stations, String name, double north, double south, double east, double west) {
 		File dir = new File(System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + "_Images");
 		if(!dir.exists()) {
 			dir.mkdir();
@@ -35,9 +36,9 @@ public class Writer {
 		for(int i = 0; i < image.length; ++i) {
 			toJPEG(image, name, i);
 		}
-		toKML(name, north, south, east, west, dates);
+		toKML(name, toString(stations), north, south, east, west, dates);
 	}
-	public static void write(BufferedImage[] image, Date[] dates, String name, double north, double south, double east, double west, List<List<List<Point2D.Double>>> isoLines) {
+	public static void write(BufferedImage[] image, Date[] dates, List<Tuple<Point2D.Double, Tuple<Double, String>>> stations, String name, double north, double south, double east, double west, List<List<List<Point2D.Double>>> isoLines) {
 		File dir = new File(System.getProperty("user.dir") + File.separator + "Out" + File.separator + name + "_Images");
 		if(!dir.exists()) {
 			dir.mkdir();
@@ -55,7 +56,7 @@ public class Writer {
 		for(int i = 0; i < image.length; ++i) {
 			toJPEG(image, name, i);
 		}
-		toKML(name, north, south, east, west, isoLines, dates);
+		toKML(name, toString(stations), north, south, east, west, isoLines, dates);
 	}
 	
 	private static void toJPEG(BufferedImage[] image, String name, int i) {
@@ -66,7 +67,7 @@ public class Writer {
 		}
 	}
 	
-	private static void toKML(String name, double north, double south, double east, double west, List<List<List<Point2D.Double>>> isoLines, Date[] dates) {
+	private static void toKML(String name, String stations, double north, double south, double east, double west, List<List<List<Point2D.Double>>> isoLines, Date[] dates) {
 		String ls = System.lineSeparator();
 		Calendar cal = Calendar.getInstance();
 		String text = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -83,6 +84,7 @@ public class Writer {
 			    + ls + "      </PolyStyle>"
 			    + ls + "    </Style>"
 				+ ls + "  <Folder>";
+		text += stations;
 		for(int d = 0; d < dates.length; ++d) {
 			cal.setTime(dates[d]);
 			cal.add(Calendar.MINUTE, 59);
@@ -141,12 +143,13 @@ public class Writer {
 		}
 	}
 	
-	private static void toKML(String name, double north, double south, double east, double west, Date[] dates) {
+	private static void toKML(String name, String stations, double north, double south, double east, double west, Date[] dates) {
 		String ls = System.lineSeparator();
 		Calendar cal = Calendar.getInstance();
 		String text = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 				+ ls + "<kml xmlns=\"http://www.opengis.net/kml/2.2\">"
 				+ ls + "  <Folder>";
+		text += stations;
 		for(int i = 0; i < dates.length; ++i) {
 			cal.setTime(dates[i]);
 			cal.add(Calendar.MINUTE, 59);
@@ -181,5 +184,26 @@ public class Writer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String toString(List<Tuple<Point2D.Double, Tuple<Double, String>>> stations) {
+		String result = "";
+		if(stations != null) {
+			String ls = System.lineSeparator();
+			for(int i = 0; i < stations.size(); ++i) {
+				result += ls + "    <Placemark>"
+						+ ls + "      <name>" + stations.get(i).y.y + "</name>"
+						+ ls + "      <description>"
+						+ ls + "        Value = " + stations.get(i).y.x
+						+ ls + "        Longitude = " + stations.get(i).x.x
+						+ ls + "        Latitude = " + stations.get(i).x.y
+						+ ls + "      </description>"
+						+ ls + "      <Point>"
+						+ ls + "        <coordinates>" + stations.get(i).x.x + "," + stations.get(i).x.y + ",0</coordinates>"
+						+ ls + "      </Point>"
+						+ ls + "    </Placemark>";
+			}
+		}
+		return result;
 	}
 }
