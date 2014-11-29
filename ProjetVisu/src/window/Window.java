@@ -72,6 +72,7 @@ public class Window implements Runnable {
 	private JSlider slide;
 	
 	private GazDatas gazDatas;
+	private float[][] pertinance;
 	
 	private InterpolatedDatas[] interpolatedDatas;
 	
@@ -82,6 +83,7 @@ public class Window implements Runnable {
 	private Date[] difDates;
 	private JLabel textChargement;
 	private List<List<List<Point2D.Double>>> isoLines;
+	private boolean usePertinance;
 	
 	JCheckBox isoValeur;
 	JTextField text;
@@ -92,9 +94,6 @@ public class Window implements Runnable {
 	public enum State {launch, openOptions, chargement, finalView}
 	
 	public Window() {
-		isoLines = new ArrayList<List<List<Point2D.Double>>>();
-		minInterpolatedValue = Double.MAX_VALUE;
-		maxInterpolatedValue = Double.MIN_VALUE;
 		thisWindow = this;
 		state = State.launch;
 		window = new JFrame("Projet - Visualisation");
@@ -128,11 +127,28 @@ public class Window implements Runnable {
 		run();
 	}
 	
+	private void calculPertinance() {
+		double maxSize = Math.max(interpolatedDatas[0].getMaxLatitude() - interpolatedDatas[0].getMinLatitude(), interpolatedDatas[0].getMaxLongitude() - interpolatedDatas[0].getMinLongitude());
+		pertinance = new float[interpolatedDatas[0].getDatas().length][interpolatedDatas[0].getDatas()[0].length];
+		for(int i = 0; i < pertinance.length; ++i) {
+			for(int j = 0; j < pertinance[0].length; ++j) {
+				double minDist = Double.MAX_VALUE;
+				for(int k = 0; k < gazDatas.getUniqueDateDatas().size(); ++k) {
+					double dist = interpolatedDatas[0].getEarthPostions(i, j).distance(gazDatas.getUniqueDateDatas().get(k).x);
+					if(dist < minDist)
+						minDist = dist;
+				}
+				pertinance[i][j] = Math.max(0.0f, 1.0f - (float) Math.max((minDist / maxSize * 2) - 0.1, 0.0) / 0.7f);
+			}
+		}
+	}
+	
 	private void save() {
 		if(!isoValeur.isSelected()) {
 			BufferedImage[] images = new BufferedImage[interpolatedDatas.length];
 			for(int i = 0; i < interpolatedDatas.length; ++i) {
-				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue);
+				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue, pertinance);
+				view2.setUsePertinance(view.getUsePertinance());
 				view2.setColorMap(colorListe.getSelectedValue());
 				images[i] = view2.getImage();
 			}
@@ -157,7 +173,8 @@ public class Window implements Runnable {
 		else {
 			BufferedImage[] images = new BufferedImage[interpolatedDatas.length];
 			for(int i = 0; i < interpolatedDatas.length; ++i) {
-				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue);
+				DrawArea view2 = new DrawArea(interpolatedDatas[i], ((float) slide.getValue()) / 100.0f, minInterpolatedValue, maxInterpolatedValue, pertinance);
+				view2.setUsePertinance(view.getUsePertinance());
 				view2.setColorMap(colorListe.getSelectedValue());
 				images[i] = view2.getImage();
 			}
@@ -187,7 +204,8 @@ public class Window implements Runnable {
 					view.setColorMap(colorListe.getSelectedValue());
 			}
 		});
-		view = new DrawArea(interpolatedDatas[0], minInterpolatedValue, maxInterpolatedValue);
+		view = new DrawArea(interpolatedDatas[0], minInterpolatedValue, maxInterpolatedValue, pertinance);
+		view.setUsePertinance(usePertinance);
 
 		JPanel center = new JPanel();
 		center.setLayout(new BorderLayout());
@@ -197,9 +215,9 @@ public class Window implements Runnable {
 		center.add(listePanel, BorderLayout.CENTER);
 		JPanel botSide = new JPanel();
 		if(difDates.length > 1)
-			botSide.setLayout(new GridLayout(7, 1));
+			botSide.setLayout(new GridLayout(8, 1));
 		else
-			botSide.setLayout(new GridLayout(5, 1));
+			botSide.setLayout(new GridLayout(6, 1));
 		JPanel choixDate = new JPanel();
 
 		day3 = new JComboBox<String>();
@@ -269,6 +287,15 @@ public class Window implements Runnable {
 		});
 		choixDate.add(day3);
 		choixDate.add(hour3);
+		JCheckBox jPertinence = new JCheckBox("Afficher la pertinance");
+		jPertinence.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				usePertinance = usePertinance == false;
+				view.setUsePertinance(usePertinance);
+				view.reDraw();
+				view.repaint();
+			}
+		});
 		
 		save = new JButton("Sauvegarder");
 		JLabel opacity = new JLabel("Opacité :");
@@ -297,6 +324,7 @@ public class Window implements Runnable {
 		}
 		botSide.add(isoValeur);
 		botSide.add(textContener);
+		botSide.add(jPertinence);
 		botSide.add(opacity);
 		botSide.add(slide);
 		botSide.add(save);
@@ -561,6 +589,7 @@ public class Window implements Runnable {
 			textChargement.setText("Interpolation des donnees " + (1 + currentDifDate) + " sur " + numberDifDates + " : ");
 		}
 		else {
+			calculPertinance();
 			state = State.finalView;
 			fillFinalView();
 			run();
@@ -592,6 +621,10 @@ public class Window implements Runnable {
 		open = new JButton("Ouvrir");
 		open.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				usePertinance = false;
+				isoLines = new ArrayList<List<List<Point2D.Double>>>();
+				minInterpolatedValue = Double.MAX_VALUE;
+				maxInterpolatedValue = Double.MIN_VALUE;
 				selectedValue = liste.getSelectedValue();
 				gazDatas = new GazDatas("In" + File.separator + selectedValue);
 				state = State.openOptions;

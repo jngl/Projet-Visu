@@ -136,7 +136,7 @@ public class InterpolatedDatas {
 		return result;
 	}
 	
-	private Point2D.Double getEarthPostions(int line, int column) {
+	public Point2D.Double getEarthPostions(int line, int column) {
 		return new Point2D.Double(minLongitude + column * pixelWidth, maxLatitude - line * pixelHeight);
 	}
 	

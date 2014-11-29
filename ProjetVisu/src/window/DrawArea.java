@@ -23,8 +23,12 @@ public class DrawArea extends JPanel {
 	private double maxValue;
 	private BufferedImage image;
 	private float opacity;
+	private float[][] pertinance;
+	private boolean usePertinance;
 
-	public DrawArea(InterpolatedDatas interpolatedDatas, double minValue, double maxValue) {
+	public DrawArea(InterpolatedDatas interpolatedDatas, double minValue, double maxValue, float[][] pertinance) {
+		usePertinance = false;
+		this.pertinance = pertinance;
 		opacity = 1.0f;
 		this.interpolatedDatas = interpolatedDatas;
 		datas = interpolatedDatas.getDatas();
@@ -33,7 +37,9 @@ public class DrawArea extends JPanel {
 		image = new BufferedImage(datas[0].length, datas.length, BufferedImage.TYPE_INT_ARGB);
 	}
 
-	public DrawArea(InterpolatedDatas interpolatedDatas, float opacity, double minValue, double maxValue) {
+	public DrawArea(InterpolatedDatas interpolatedDatas, float opacity, double minValue, double maxValue, float[][] pertinance) {
+		usePertinance = false;
+		this.pertinance = pertinance;
 		this.opacity = opacity;
 		datas = interpolatedDatas.getDatas();
 		this.minValue = minValue;
@@ -45,22 +51,31 @@ public class DrawArea extends JPanel {
 		if(this.interpolatedDatas != interpolatedDatas) {
 			this.interpolatedDatas = interpolatedDatas;
 			this.datas = interpolatedDatas.getDatas();
+			reDraw();
+			repaint();
+		}
+	}
+	
+	public void reDraw() {
+		if(usePertinance) {
 			for(int i = 0; i < datas.length; ++i) {
 				for(int j = 0; j < datas[0].length; ++j) {
-					image.setRGB(j, i, this.colorMap.getColor(datas[i][j]));
+					image.setRGB(j, i, this.colorMap.getColor(datas[i][j], pertinance[i][j]));
 				}
 			}
-			repaint();
+		}
+		else {
+			for(int i = 0; i < datas.length; ++i) {
+				for(int j = 0; j < datas[0].length; ++j) {
+					image.setRGB(j, i, this.colorMap.getColor(datas[i][j], 1.0f));
+				}
+			}
 		}
 	}
 	
 	public void setColorMap(File colorMap) {
 		this.colorMap = new ColorMap(colorMap, minValue, maxValue);
-		for(int i = 0; i < datas.length; ++i) {
-			for(int j = 0; j < datas[0].length; ++j) {
-				image.setRGB(j, i, this.colorMap.getColor(datas[i][j]));
-			}
-		}
+		reDraw();
 		repaint();
 	}
 	
@@ -68,8 +83,17 @@ public class DrawArea extends JPanel {
 		return image;
 	}
 	
+	public void setUsePertinance(Boolean b) {
+		usePertinance = b;
+	}
+	
+	public boolean getUsePertinance() {
+		return usePertinance;
+	}
+	
 	public void paintComponent(Graphics g) {
 		Graphics2D graphics = (Graphics2D) g;
+		g.clearRect(0, 0, getWidth(), getHeight());
 		graphics.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 	}
 	
@@ -89,7 +113,7 @@ public class DrawArea extends JPanel {
             }
 		}
 		
-		public int getColor(double value) {
+		public int getColor(double value, float pertinanceOpacity) {
 			int i = 0;
 			while(value > colors.get(i + 1).x && i != colors.size() - 2)
 				++i;
@@ -99,7 +123,7 @@ public class DrawArea extends JPanel {
 			float g = percentageStart * colors.get(i).g + percentageEnd * colors.get(i + 1).g;
 			float b = percentageStart * colors.get(i).b + percentageEnd * colors.get(i + 1).b;
 			float a = percentageStart * colors.get(i).o + percentageEnd * colors.get(i + 1).o;
-			return new Color(r, g, b, a * opacity).getRGB();
+			return new Color(r, g, b, a * opacity * pertinanceOpacity).getRGB();
 		}
 	}
 		
