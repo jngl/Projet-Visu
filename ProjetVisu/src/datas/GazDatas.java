@@ -34,6 +34,7 @@ public class GazDatas {
 		dates = new ArrayList<Date>();
 		Reader file = new Reader(path);
 		String[] beginDay = file.datas.getData(dateline, beginDataColumn).split("/");
+		System.out.println(beginDay[0]);
 		String[] beginHour = file.datas.getData(dateline + 1, beginDataColumn).split(":");
 		Calendar cal = Calendar.getInstance();
 		try {

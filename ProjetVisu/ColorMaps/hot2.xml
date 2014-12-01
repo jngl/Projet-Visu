@@ -1,4 +1,4 @@
-<ColorMap name="Cool to Warm" space="RGB">
+<ColorMap name="hot 2" space="RGB">
 <Point x="-1.000" o="1.0" r="1.0" g="1.0" b="0.0"/>
 <Point x="1.000" o="1.0" r="1.0" g="0.0" b="0.0"/>
 </ColorMap>
