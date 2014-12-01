@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Folder>
+    <Placemark>
+      <name>A7 Nord-Isere - Trafic </name>
+      <description>
+        Value = 5.8
+        Longitude = 4.80483
+        Latitude = 45.3532
+      </description>
+      <Point>
+        <coordinates>4.80483,45.3532,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Roussillon - Urbain </name>
+      <description>
+        Value = 1.9
+        Longitude = 4.80515
+        Latitude = 45.3679
+      </description>
+      <Point>
+        <coordinates>4.80515,45.3679,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sud lyonnais / Feyzin ZI - Industrielle </name>
+      <description>
+        Value = 9.673366
+        Longitude = 4.85625
+        Latitude = 45.6717
+      </description>
+      <Point>
+        <coordinates>4.85625,45.6717,0</coordinates>
+      </Point>
+    </Placemark>
+    <GroundOverlay>
+      <TimeSpan>
+        <begin>0012-11-08T21:00:00Z</begin>
+        <end>0012-11-08T21:59:59Z</end>
+      </TimeSpan>
+      <name>Overlay on terrain</name>
+      <visibility>1</visibility>
+      <description>Overlay</description>
+      <Icon>
+        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\benzene_Images\benzene_0.png</href>
+      </Icon>
+      <LatLonBox>
+        <north>45.70355</north>
+        <south>45.32135</south>
+        <east>4.861392</east>
+        <west>4.799688</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+    <GroundOverlay>
+      <TimeSpan>
+        <begin>0012-11-08T22:00:00Z</begin>
+        <end>0012-11-08T22:59:59Z</end>
+      </TimeSpan>
+      <name>Overlay on terrain</name>
+      <visibility>1</visibility>
+      <description>Overlay</description>
+      <Icon>
+        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\benzene_Images\benzene_1.png</href>
+      </Icon>
+      <LatLonBox>
+        <north>45.70355</north>
+        <south>45.32135</south>
+        <east>4.861392</east>
+        <west>4.799688</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+    <GroundOverlay>
+      <TimeSpan>
+        <begin>0012-11-08T23:00:00Z</begin>
+        <end>0012-11-08T23:59:59Z</end>
+      </TimeSpan>
+      <name>Overlay on terrain</name>
+      <visibility>1</visibility>
+      <description>Overlay</description>
+      <Icon>
+        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\benzene_Images\benzene_2.png</href>
+      </Icon>
+      <LatLonBox>
+        <north>45.70355</north>
+        <south>45.32135</south>
+        <east>4.861392</east>
+        <west>4.799688</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+    <GroundOverlay>
+      <TimeSpan>
+        <begin>0012-11-09T00:00:00Z</begin>
+        <end>0012-11-09T00:59:59Z</end>
+      </TimeSpan>
+      <name>Overlay on terrain</name>
+      <visibility>1</visibility>
+      <description>Overlay</description>
+      <Icon>
+        <href>C:\Users\Rexxar\git\Projet-Visu\ProjetVisu\Out\benzene_Images\benzene_3.png</href>
+      </Icon>
+      <LatLonBox>
+        <north>45.70355</north>
+        <south>45.32135</south>
+        <east>4.861392</east>
+        <west>4.799688</west>
+        <rotation>-0.1556640799496235</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+  </Folder>
+</kml>

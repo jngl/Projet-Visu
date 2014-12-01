@@ -34,11 +34,18 @@ public class GazDatas {
 		dates = new ArrayList<Date>();
 		Reader file = new Reader(path);
 		String[] beginDay = file.datas.getData(dateline, beginDataColumn).split("/");
-		System.out.println(beginDay[0]);
 		String[] beginHour = file.datas.getData(dateline + 1, beginDataColumn).split(":");
+		if(beginHour.length < 3) {
+			String newBeginHour[] = new String[3];
+			for(int i = 0; i < beginHour.length; ++i)
+				newBeginHour[i] = beginHour[i];
+			for(int i = beginHour.length; i < 3; ++i)
+				newBeginHour[i] = "00";
+			beginHour = newBeginHour;
+		}
 		Calendar cal = Calendar.getInstance();
 		try {
-			cal.setTime(Utils.getDate(Integer.parseInt(beginDay[0]), Integer.parseInt(beginDay[1]), Integer.parseInt(beginDay[2]),
+			cal.setTime(Utils.getDate(Integer.parseInt(beginDay[1]), Integer.parseInt(beginDay[0]), Integer.parseInt(beginDay[2]),
 					Integer.parseInt(beginHour[0]), Integer.parseInt(beginHour[1]), Integer.parseInt(beginHour[2])));
 		} catch (NumberFormatException | MyOutOfBoundException e) {
 			e.printStackTrace();
